@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import 'materialize-css/dist/css/materialize.min.css'
-import Tabela from './Tabela';
-import Formulario from './Formulario';
-import Header from './Header';
-import ApiService from './ApiService';
-import PopUp from './PopUp';
+import 'materialize-css/dist/css/materialize.min.css';
+import './Home.css';
+import Tabela from '../../Components/Tabela/Tabela';
+import Formulario from '../../Components/Formulario/Formulario';
+import Header from '../../Components/Header/Header';
+import ApiService from '../../utils/ApiService';
+import PopUp from '../../utils/PopUp';
 
 
 class App extends Component {
@@ -26,7 +27,6 @@ class App extends Component {
       return autor.id !== id;
     });
     ApiService.RemoveAutor(id)
-      .then(res => ApiService.TrataErros(res))
       .then(res => {
         if (res.message === 'delete') {
           this.setState({autores : [...autoresAtualizado]})
@@ -39,11 +39,9 @@ class App extends Component {
 
   escutadorDeSubmit = autor => {
     ApiService.CriaAutor(JSON.stringify(autor))
-      .then(res => ApiService.TrataErros(res))
       .then(res => {
-
         if (res.message === 'success') {
-          this.setState({autores : [...this.state.autores, ...res.data]});
+          this.setState({autores : [...this.state.autores, res.data]});
           PopUp.exibeMensagem("success", "Autor ADICIONADO com sucesso");
 
         }
@@ -53,9 +51,7 @@ class App extends Component {
 
   componentDidMount() {
     ApiService.ListaAutores()
-      .then(res => ApiService.TrataErros(res))
       .then(res => {
-
         if (res.message === 'success') {
           this.setState({ autores: [...this.state.autores, ...res.data]});
 

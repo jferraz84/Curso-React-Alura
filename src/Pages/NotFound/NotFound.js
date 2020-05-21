@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 
-import Header from './Header';
+import Header from '../../Components/Header/Header';
 
 class NotFound extends Component{
 

@@ -1,4 +1,4 @@
-import validador from 'validator';
+import validador from '../../node_modules/validator';
 
 class FormValidator {
 
