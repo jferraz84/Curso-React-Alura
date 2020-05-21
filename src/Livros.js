@@ -3,6 +3,7 @@ import Header from './Header';
 
 import DataTable from './DataTable'
 import ApiService from './ApiService';
+import PopUp from './PopUp';
 
 class Livros extends Component {
 
@@ -16,10 +17,18 @@ class Livros extends Component {
     }
 
     componentDidMount() {
-      ApiService.ListaLivros()
-        .then(res => {
-          this.setState({livros: [...this.state.livros, ...res.data] });
-        });
+        ApiService.ListaLivros()
+            .then(res => ApiService.TrataErros(res))
+            .then(res => {
+
+                if (res.message === 'success') {
+                    PopUp.exibeMensagem("success", "Livros listado com SUCESSO");
+                    this.setState({ livros: [...this.state.livros, ...res.data] });
+
+                }
+            })
+            .catch(err => PopUp.exibeMensagem("error", "Erro ao tentar listar os Nomes dos Livros"));;
+
     }
 
     render() {
@@ -30,7 +39,7 @@ class Livros extends Component {
                     <h1>Livros</h1>
                     <DataTable dados={this.state.livros} titulo={this.state.titulo} colunas={['livro']} />
 
-                </div>  
+                </div>
             </Fragment>
         );
     }

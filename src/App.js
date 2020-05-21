@@ -22,32 +22,46 @@ class App extends Component {
 
     const { autores } = this.state;
 
-    this.setState(
-      {
-        autores: autores.filter((autor) => {
-          return autor.id !== id;
-        }),
-      }
-    );
-    PopUp.exibeMensagem("error", "Autor REMOVIDO com sucesso");
-    ApiService.RemoveAutor(id);
+    const autoresAtualizado = autores.filter(autor => {
+      return autor.id !== id;
+    });
+    ApiService.RemoveAutor(id)
+      .then(res => ApiService.TrataErros(res))
+      .then(res => {
+        if (res.message === 'delete') {
+          this.setState({autores : [...autoresAtualizado]})
+          PopUp.exibeMensagem("error", "Autor REMOVIDO com sucesso");
+        }
+      })
+      .catch(err => PopUp.exibeMensagem("error", "Erro ao tentar Remover"));
 
   }
 
   escutadorDeSubmit = autor => {
     ApiService.CriaAutor(JSON.stringify(autor))
-      .then(res => res.data)
-      .then(autor => {
-        this.setState({ autores: [...this.state.autores, autor] });
-        PopUp.exibeMensagem("success", "Autor ADICIONADO com sucesso");
-      });
+      .then(res => ApiService.TrataErros(res))
+      .then(res => {
+
+        if (res.message === 'success') {
+          this.setState({autores : [...this.state.autores, ...res.data]});
+          PopUp.exibeMensagem("success", "Autor ADICIONADO com sucesso");
+
+        }
+      })
+      .catch(err => PopUp.exibeMensagem("error", "Erro ao tentar criar o Autor"));
   }
 
   componentDidMount() {
     ApiService.ListaAutores()
+      .then(res => ApiService.TrataErros(res))
       .then(res => {
-        this.setState({ autores: [...this.state.autores, ...res.data] })
-      });
+
+        if (res.message === 'success') {
+          this.setState({ autores: [...this.state.autores, ...res.data]});
+
+        }
+      })
+      .catch(err => PopUp.exibeMensagem("error", "Erro ao tentar listar os Autores"));;
 
   }
 
@@ -60,7 +74,7 @@ class App extends Component {
           <Tabela autores={this.state.autores} removeAutor={this.removeAutor} />
           <Formulario escutadorDeSubmit={this.escutadorDeSubmit} />
         </div>
-      </Fragment>
+      </Fragment >
     );
   }
 }
