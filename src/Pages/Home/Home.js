@@ -1,14 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
 import './Home.css';
+import Header from '../../Components/Header/Header';
 import Tabela from '../../Components/Tabela/Tabela';
 import Formulario from '../../Components/Formulario/Formulario';
-import Header from '../../Components/Header/Header';
-import ApiService from '../../utils/ApiService';
 import PopUp from '../../utils/PopUp';
+import ApiService from '../../utils/ApiService';
 
-
-class App extends Component {
+class Home extends Component {
 
   constructor(props) {
 
@@ -24,16 +23,16 @@ class App extends Component {
     const { autores } = this.state;
 
     const autoresAtualizado = autores.filter(autor => {
-      return autor.id !== id;
+        return autor.id !== id;
     });
     ApiService.RemoveAutor(id)
-      .then(res => {
-        if (res.message === 'delete') {
-          this.setState({autores : [...autoresAtualizado]})
-          PopUp.exibeMensagem("error", "Autor REMOVIDO com sucesso");
-        }
-      })
-      .catch(err => PopUp.exibeMensagem("error", "Erro ao tentar Remover"));
+              .then(res =>{
+                if(res.message === 'deleted'){
+                  this.setState({autores : [...autoresAtualizado]})
+                  PopUp.exibeMensagem("error", "Autor REMOVIDO com sucesso");
+                }
+              })
+              .catch(err => PopUp.exibeMensagem("error", "Erro ao tentar Remover"));
 
   }
 
@@ -75,4 +74,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Home;
